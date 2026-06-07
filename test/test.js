@@ -262,6 +262,27 @@ check('back-to-top alias top-button', P.renderDocument('---\ntop-button: yes\n--
 check('back-to-top via option', P.renderDocument('x', { 'back-to-top': true }).indexOf('pmd-totop') !== -1);
 check('smooth scroll css', P.renderDocument('x', {}).indexOf('scroll-behavior:smooth') !== -1);
 
+// sticky header / masthead
+check('no topbar by default', P.renderDocument('---\ntitle: T\n---\nx', {}).indexOf('<header class="pmd-topbar">') === -1);
+var sticky = P.renderDocument('---\ntitle: Q2 Report\nauthor: Jay\ndate: 2026-06-07\nsticky-header: true\n---\n# H', {});
+check('sticky topbar present', sticky.indexOf('<header class="pmd-topbar">') !== -1);
+check('topbar shows title', sticky.indexOf('<span class="pmd-topbar-title">Q2 Report</span>') !== -1);
+check('topbar shows meta', sticky.indexOf('pmd-topbar-meta') !== -1 && sticky.indexOf('Jay') !== -1);
+check('html gets has-topbar class', sticky.indexOf('<html lang="en" class="pmd-has-topbar"') !== -1);
+check('topbar sticky css', sticky.indexOf('.pmd-topbar{position:sticky;top:0') !== -1);
+check('topbar alias sticky-nav', P.renderDocument('---\ntitle: T\nsticky-nav: yes\n---\nx', {}).indexOf('pmd-topbar"') !== -1);
+check('topbar via option', P.renderDocument('---\ntitle: T\n---\nx', { 'sticky-header': true }).indexOf('<header class="pmd-topbar">') !== -1);
+check('no topbar without a title', P.renderDocument('---\nsticky-header: true\n---\n# Body', {}).indexOf('<header class="pmd-topbar">') === -1);
+check('topbar offsets side toc', P.renderDocument('---\ntitle: T\ntoc: side\nsticky-header: true\n---\n## A', {}).indexOf('.pmd-has-topbar .pmd-side{top:4.3rem') !== -1);
+
+// hide the in-content hero header
+check('hero header shown by default', P.renderDocument('---\ntitle: T\n---\nx', {}).indexOf('<header class="pmd-header">') !== -1);
+check('hero: false hides header block', P.renderDocument('---\ntitle: T\nhero: false\n---\nx', {}).indexOf('<header class="pmd-header">') === -1);
+check('title-block: false hides header', P.renderDocument('---\ntitle: T\ntitle-block: false\n---\nx', {}).indexOf('<header class="pmd-header">') === -1);
+check('show-header: no hides header', P.renderDocument('---\ntitle: T\nshow-header: no\n---\nx', {}).indexOf('<header class="pmd-header">') === -1);
+check('hidden hero still allows sticky bar', (function(){var h=P.renderDocument('---\ntitle: T\nsticky-header: true\nhero: false\n---\nx',{});return h.indexOf('<header class="pmd-header">')===-1 && h.indexOf('<header class="pmd-topbar">')!==-1;})());
+check('legacy titleBlock:false still works', P.renderDocument('---\ntitle: T\n---\nx', { titleBlock: false }).indexOf('<header class="pmd-header">') === -1);
+
 // playful mode
 check('not playful by default', P.renderDocument('# H', {}).indexOf('class="pmd pmd-playful"') === -1 && P.renderDocument('# H', {}).indexOf('pmd-playful"') === -1);
 var fun = P.renderDocument('---\nplayful: true\n---\n# H', {});

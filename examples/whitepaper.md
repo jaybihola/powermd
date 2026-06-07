@@ -6,6 +6,9 @@ date: 2026-06-07
 theme: paper
 accent: "#a8632b"
 toc: top
+sticky-header: true
+hero: false
+back-to-top: true
 width: 760
 heading-font: Georgia, "Times New Roman", serif
 heading-scale: 1.1

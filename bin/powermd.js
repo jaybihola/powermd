@@ -175,6 +175,8 @@ function starterDoc(name) {
     'accent: "#0969da"     # any CSS color sets the accent',
     'toc: side             # side, left, right, top, or remove for none',
     'back-to-top: true     # floating "scroll to top" button',
+    '# sticky-header: true  # pinned title bar at the top while scrolling',
+    '# hero: false          # hide the big in-content title block',
     '# playful: true        # subtle animations & hover effects',
     '# collapsible-headings: false   # true / collapsed to fold each section',
     '',

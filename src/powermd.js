@@ -1219,6 +1219,20 @@
     'box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:.7;transition:opacity .15s,transform .15s;z-index:60}',
     '.pmd-totop svg{display:block;stroke:#fff}',
     '.pmd-totop:hover{opacity:1;transform:translateY(-3px);text-decoration:none;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.3)}',
+    // sticky top bar / masthead (front matter: sticky-header)
+    '.pmd-topbar{position:sticky;top:0;z-index:50;border-bottom:1px solid var(--pmd-border);',
+    'background:color-mix(in srgb,var(--pmd-bg) 85%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}',
+    '.pmd-topbar-inner{max-width:var(--pmd-width-wide,1120px);margin:0 auto;padding:.65rem 1.5rem;',
+    'display:flex;align-items:center;gap:1rem}',
+    '.pmd-topbar-title{font-weight:700;font-size:1rem;letter-spacing:-.01em;min-width:0;overflow:hidden;',
+    'text-overflow:ellipsis;white-space:nowrap;position:relative;padding-left:.7rem}',
+    '.pmd-topbar-title:before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);',
+    'width:4px;height:1.1em;border-radius:2px;background:var(--pmd-accent)}',
+    '.pmd-topbar-meta{margin-left:auto;color:var(--pmd-muted);font-size:.84em;white-space:nowrap}',
+    '.pmd-has-topbar{scroll-padding-top:4rem}',
+    '.pmd-has-topbar .pmd-side{top:4.3rem;max-height:calc(100vh - 5.8rem)}',
+    '@media print{.pmd-topbar{display:none}}',
+    '@media(max-width:600px){.pmd-topbar-meta{display:none}}',
     // header / report meta
     '.pmd-header{margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:2px solid var(--pmd-border)}',
     '.pmd-title{margin:0 0 .2em;font-size:2.4em}',
@@ -1353,13 +1367,15 @@
       ? '\n<a class="pmd-totop" href="#pmd-top" title="Back to top" aria-label="Back to top">' +
         '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" ' +
         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a>' : '';
+    var htmlClass = opts.topbar ? ' class="pmd-has-topbar"' : '';
     return (
-      '<!doctype html>\n<html lang="en" data-theme="' + escapeAttr(opts.themeName || 'light') + '">\n' +
+      '<!doctype html>\n<html lang="en"' + htmlClass + ' data-theme="' + escapeAttr(opts.themeName || 'light') + '">\n' +
       '<head>\n<meta charset="utf-8"/>\n' +
       '<meta name="viewport" content="width=device-width, initial-scale=1"/>\n' +
       '<title>' + escapeHtml(opts.title || 'Document') + '</title>\n' +
       '<style>\n' + opts.css + '\n</style>\n</head>\n' +
-      '<body>\n' + top + '<main class="' + (opts.mainClass || 'pmd') + '">\n' + opts.body + '\n</main>' + btn + '\n</body>\n</html>\n'
+      '<body>\n' + top + (opts.topbar || '') +
+      '<main class="' + (opts.mainClass || 'pmd') + '">\n' + opts.body + '\n</main>' + btn + '\n</body>\n</html>\n'
     );
   }
 
@@ -1443,8 +1459,16 @@
     }
     var bodyHtml = blocks.join('\n');
 
+    // The in-content "hero" header block can be turned off (e.g. when using a
+    // sticky bar instead). Front matter: hero / title-block / show-header: false
+    var heroSetting = options['title-block'] != null ? options['title-block']
+      : (meta['title-block'] != null ? meta['title-block']
+        : (meta.hero != null ? meta.hero : meta['show-header']));
+    var heroOff = options.titleBlock === false ||
+      /^(false|no|off|0|none|hide|hidden)$/.test(String(heroSetting == null ? '' : heroSetting).toLowerCase());
+
     var header = '';
-    var showHeader = options.titleBlock !== false && (meta.title || meta.subtitle);
+    var showHeader = !heroOff && (meta.title || meta.subtitle);
     if (showHeader) {
       header = '<header class="pmd-header">';
       if (meta.title) header += '<h1 class="pmd-title">' + inline(meta.title) + '</h1>';
@@ -1491,13 +1515,30 @@
       : (meta['back-to-top'] || meta['top-button'] || meta['scroll-top'] || '')).toLowerCase();
     var playful = String(options.playful != null ? options.playful : (meta.playful || meta.fun || '')).toLowerCase();
     if (/^(true|on|yes|1)$/.test(playful)) mainClass += ' pmd-playful';
+
+    // sticky top bar (masthead) — front matter: sticky-header
+    var sh = String(options['sticky-header'] != null ? options['sticky-header']
+      : (meta['sticky-header'] || meta['sticky-nav'] || meta['header-sticky'] || '')).toLowerCase();
+    var topbar = '';
+    if (/^(true|on|yes|1)$/.test(sh) && (meta.title || title !== 'Document')) {
+      var barTitle = meta.title || title;
+      var barMeta = [];
+      if (meta.author) barMeta.push(escapeHtml(meta.author));
+      if (meta.date) barMeta.push(escapeHtml(meta.date));
+      topbar = '<header class="pmd-topbar"><div class="pmd-topbar-inner">' +
+        '<span class="pmd-topbar-title">' + inline(barTitle) + '</span>' +
+        (barMeta.length ? '<span class="pmd-topbar-meta">' + barMeta.join(' &middot; ') + '</span>' : '') +
+        '</div></header>';
+    }
+
     return buildHtmlDocument({
       title: title,
       css: css,
       body: body,
       mainClass: mainClass,
       themeName: themeName,
-      backToTop: /^(true|on|yes|1)$/.test(b2t)
+      backToTop: /^(true|on|yes|1)$/.test(b2t),
+      topbar: topbar
     });
   }
 

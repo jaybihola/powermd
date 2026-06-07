@@ -231,6 +231,31 @@ back-to-top: true
 ---
 ```
 
+**Sticky header bar** — `sticky-header: true` adds a slim masthead pinned to the
+top of the page (frosted-glass background, an accent tick, the title, and
+author · date) that stays visible while you scroll. It offsets the sidebar TOC
+and anchor scrolling automatically and is hidden when printing:
+
+```markdown
+---
+title: Q2 Business Review
+author: Jane Doe
+date: 2026-06-07
+sticky-header: true     # aliases: sticky-nav, header-sticky
+---
+```
+
+To use the sticky bar *instead of* the big in-content title block, hide the hero
+header with `hero: false` (aliases `title-block: false`, `show-header: false`):
+
+```markdown
+---
+title: Q2 Business Review
+sticky-header: true
+hero: false             # drop the large title block from the page body
+---
+```
+
 **Playful mode** — `playful: true` makes the report come alive: cards/callouts
 lift on hover, callout icons wiggle, badges pulse, table rows highlight, images
 zoom slightly, links get an animated underline, and headings/cards gently fade
@@ -351,6 +376,18 @@ const css = PowerMD.getCss('paper', { accent: '#a8632b' });
 `renderDocument` reads front matter from the Markdown; any option you pass overrides the matching front-matter value.
 
 ---
+
+## Examples
+
+Build them all with `npm run build:examples` (each is a different theme, with no overlap):
+
+| File | Theme | Shows off |
+|------|-------|-----------|
+| `report.md` | light | The starter — broad tour: callouts, cards, code, tables, side TOC, back-to-top |
+| `whitepaper.md` | paper | Page-styling props (serif headings, justified, scale), top TOC, **sticky header replacing the hero** (`hero: false`) |
+| `dark-dashboard.md` | dark | **Playful mode**, metric card grid with badges/icons, right-side TOC |
+| `release-notes.md` | slate | GitHub-style alerts (incl. collapsible), highlighted **diff** code, task lists |
+| `feature-reference.md` | contrast | **Every feature on one page** — collapsible headings, inline `[toc]`, all callouts, all code features, in-code folding, scoped CSS, images |
 
 ## How it's built
 
