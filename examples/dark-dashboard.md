@@ -7,6 +7,8 @@ theme: dark
 accent: "#58a6ff"
 toc: right
 radius: 14
+playful: true
+back-to-top: true
 ---
 
 ## Highlights

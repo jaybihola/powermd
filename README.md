@@ -219,7 +219,29 @@ Or drop it exactly where you want with a tag on its own line:
 
 It's collapsible with no JavaScript — click the heading to fold it. On narrow
 screens the sidebar automatically moves above the content, and it's hidden when
-printing.
+printing. The sidebar TOC is styled with a guide rail, hover highlights, and
+section dots; nested headings indent by level.
+
+**Floating "back to top" button** — add `back-to-top: true` to the front matter
+for a floating button that smooth-scrolls to the top (hidden when printing):
+
+```markdown
+---
+back-to-top: true
+---
+```
+
+**Playful mode** — `playful: true` makes the report come alive: cards/callouts
+lift on hover, callout icons wiggle, badges pulse, table rows highlight, images
+zoom slightly, links get an animated underline, and headings/cards gently fade
+in. It's all injected by the renderer (no CSS to write) and automatically
+disabled for readers who prefer reduced motion.
+
+```markdown
+---
+playful: true     # alias: fun
+---
+```
 
 ### 7. Collapsible sections & cards
 

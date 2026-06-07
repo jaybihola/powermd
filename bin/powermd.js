@@ -174,6 +174,8 @@ function starterDoc(name) {
     'theme: light          # light, dark, paper, slate, contrast',
     'accent: "#0969da"     # any CSS color sets the accent',
     'toc: side             # side, left, right, top, or remove for none',
+    'back-to-top: true     # floating "scroll to top" button',
+    '# playful: true        # subtle animations & hover effects',
     '# collapsible-headings: false   # true / collapsed to fold each section',
     '',
     '# --- page styling (all optional; uncomment to change) ---',

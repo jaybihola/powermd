@@ -222,8 +222,9 @@ check('option theme overrides front matter', ov.indexOf('data-theme="paper"') !=
 // table of contents
 var tocTop = P.renderDocument('---\ntoc: top\n---\n## Alpha\n### Beta\n## Gamma', {});
 check('toc top renders details', tocTop.indexOf('<details class="pmd-toc" open>') !== -1);
-check('toc lists headings', tocTop.indexOf('>Alpha</a>') !== -1 && tocTop.indexOf('>Beta</a>') !== -1);
-check('toc nests by level', tocTop.indexOf('pmd-toc-l1') !== -1);
+check('toc lists headings', tocTop.indexOf('>Alpha</span>') !== -1 && tocTop.indexOf('>Beta</span>') !== -1);
+check('toc nests by level', tocTop.indexOf('pmd-toc-d1') !== -1 && /<li class="pmd-toc-d0">[\s\S]*<ul><li class="pmd-toc-d1">/.test(tocTop));
+check('toc nested ul structure', /<\/li><\/ul><\/li>/.test(tocTop));
 check('toc top before content', tocTop.indexOf('pmd-toc') < tocTop.indexOf('id="alpha"'));
 
 var tocSide = P.renderDocument('---\ntoc: side\n---\n## Alpha\n## Beta', {});
@@ -245,9 +246,32 @@ var commented = P.renderDocument('---\ntoc: side  # left, right, top\ntheme: dar
 check('front matter strips trailing comment (toc)', commented.indexOf('pmd-toc-left') !== -1);
 check('front matter strips trailing comment (theme)', commented.indexOf('data-theme="dark"') !== -1);
 check('quoted front matter keeps #', P.renderDocument('---\naccent: "#abc"\n---\nx', {}).indexOf('--pmd-accent:#abc') !== -1);
+check('quoted value + trailing comment strips both', P.renderDocument('---\naccent: "#0969da"   # the accent\n---\nx', {}).indexOf('--pmd-accent:#0969da') !== -1);
+check('no leftover quotes in accent var', P.renderDocument('---\naccent: "#0969da"   # c\n---\nx', {}).indexOf('--pmd-accent:"') === -1);
+check('quoted title with internal hash kept', P.extractFrontMatter('---\ntitle: "A # B"\n---\nx').meta.title === 'A # B');
 
 var noToc = P.renderDocument('## A\n## B', {});
 check('no toc by default', noToc.indexOf('<details class="pmd-toc"') === -1);
+
+// back-to-top button (front matter toggle)
+check('no back-to-top by default', P.renderDocument('# H\n\ntext', {}).indexOf('<a class="pmd-totop"') === -1);
+var b2t = P.renderDocument('---\nback-to-top: true\n---\n# H\n\ntext', {});
+check('back-to-top button present', b2t.indexOf('<a class="pmd-totop" href="#pmd-top"') !== -1);
+check('back-to-top anchor present', b2t.indexOf('<a id="pmd-top"></a>') !== -1);
+check('back-to-top alias top-button', P.renderDocument('---\ntop-button: yes\n---\nx', {}).indexOf('pmd-totop') !== -1);
+check('back-to-top via option', P.renderDocument('x', { 'back-to-top': true }).indexOf('pmd-totop') !== -1);
+check('smooth scroll css', P.renderDocument('x', {}).indexOf('scroll-behavior:smooth') !== -1);
+
+// playful mode
+check('not playful by default', P.renderDocument('# H', {}).indexOf('class="pmd pmd-playful"') === -1 && P.renderDocument('# H', {}).indexOf('pmd-playful"') === -1);
+var fun = P.renderDocument('---\nplayful: true\n---\n# H', {});
+check('playful adds class to main', fun.indexOf('<main class="pmd pmd-playful">') !== -1);
+check('playful keyframes present', fun.indexOf('@keyframes pmdFadeUp') !== -1 && fun.indexOf('@keyframes pmdWiggle') !== -1);
+check('playful respects reduced motion', fun.indexOf('@media (prefers-reduced-motion:no-preference)') !== -1);
+check('playful alias fun', P.renderDocument('---\nfun: yes\n---\nx', {}).indexOf('pmd-playful') !== -1);
+check('playful via option', P.renderDocument('x', { playful: true }).indexOf('pmd-playful') !== -1);
+check('playful composes with side toc', P.renderDocument('---\ntoc: side\nplayful: true\n---\n## A', {}).indexOf('pmd-withtoc pmd-toc-left pmd-playful') !== -1);
+check('toc rail css present', P.renderDocument('x', {}).indexOf('border-left:2px solid var(--pmd-border)') !== -1);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
