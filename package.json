@@ -1,0 +1,26 @@
+{
+  "name": "powermd",
+  "version": "1.0.0",
+  "description": "Zero-dependency Markdown engine for rendering nice reports — static HTML output plus a live editor, with tag-based custom styling.",
+  "keywords": ["markdown", "html", "report", "renderer", "editor", "zero-dependency"],
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "src/powermd.js",
+  "bin": {
+    "powermd": "bin/powermd.js"
+  },
+  "files": [
+    "src",
+    "bin",
+    "server",
+    "README.md"
+  ],
+  "scripts": {
+    "build:examples": "node -e \"require('fs').readdirSync('examples').filter(f=>f.endsWith('.md')).forEach(f=>require('child_process').execSync('node bin/powermd.js build examples/'+f,{stdio:'inherit'}))\"",
+    "serve:example": "node bin/powermd.js serve examples/report.md --open",
+    "test": "node test/test.js"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
