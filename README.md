@@ -145,7 +145,12 @@ const PORT = process.env.PORT || 3000; // highlighted
 | `{2}` / `{1-3,7}` | Highlight specific lines |
 | `numbers` / `no-numbers` | Force line numbers on/off (auto: on for multi-line) |
 | `start=10` | Start the line numbering at N |
-| `fold` / `open` | Make the block collapsible (start collapsed / expanded) |
+| `fold` / `open` | Make the **whole block** collapsible (start collapsed / expanded) |
+| `foldable` / `no-foldcode` | Toggle **in-code folding** of nested regions |
+
+**Two levels of collapsing:**
+- **The whole block** — add `fold` (or `open`) to the fence; the title/language bar becomes the click target.
+- **Inside the code** — collapse nested structures (JSON objects/arrays, function bodies, etc.) by clicking the ▾ arrows in the gutter. This is **on automatically for JSON**; add `foldable` to enable it for any language, or turn it on everywhere with `code-foldable: true`. It's pure CSS (nested `<details>`), so it works in the exported file too.
 
 Turn line numbers off everywhere with `code-numbers: false` in the front matter. Token colors adapt to the theme (light palette for light/paper/contrast, GitHub-dark for dark/slate).
 

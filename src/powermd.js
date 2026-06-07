@@ -25,6 +25,8 @@
 
   // 'auto' (numbers on multi-line blocks) | 'on' | 'off'; set per renderDocument.
   var _codeNumbers = 'auto';
+  // in-code structural folding: 'auto' (on for JSON) | 'on' | 'off'.
+  var _codeFoldable = 'auto';
 
   /* ----------------------------------------------------------------------- *
    * Small helpers
@@ -712,6 +714,51 @@
     return set;
   }
 
+  // Build flat per-line rows.
+  function flatRows(lines, start, hl) {
+    return lines.map(function (ln, idx) {
+      var no = start + idx;
+      return '<span class="pmd-row' + (hl[no] ? ' pmd-hl' : '') + '" data-ln="' + no + '">' +
+        '<span class="pmd-line">' + (ln || '') + '</span></span>';
+    }).join('');
+  }
+
+  // Build rows with in-code folding: any line whose following lines are more
+  // indented becomes a collapsible <details> (the opening line is the summary).
+  // Returns null when there is nothing foldable, so the caller uses flatRows.
+  function foldRows(lines, indents, start, hl) {
+    var i = 0, n = lines.length, folded = false;
+    function row(idx, summary) {
+      var no = start + idx;
+      var inner = '<span class="pmd-foldarrow"></span><span class="pmd-line">' + (lines[idx] || '') + '</span>';
+      var cls = 'pmd-row' + (hl[no] ? ' pmd-hl' : '');
+      return summary
+        ? '<summary class="' + cls + '" data-ln="' + no + '">' + inner + '</summary>'
+        : '<span class="' + cls + '" data-ln="' + no + '">' + inner + '</span>';
+    }
+    function build(minIndent) {
+      var html = '';
+      while (i < n) {
+        if (lines[i] !== '' && indents[i] < minIndent) break;
+        var idx = i;
+        var ind = indents[idx];
+        var j = idx + 1; while (j < n && lines[j] === '') j++;
+        var isParent = lines[idx] !== '' && j < n && indents[j] > ind;
+        if (isParent) {
+          folded = true;
+          i = idx + 1;
+          html += '<details class="pmd-fl" open>' + row(idx, true) + build(ind + 1) + '</details>';
+        } else {
+          html += row(idx, false);
+          i = idx + 1;
+        }
+      }
+      return html;
+    }
+    var out = build(0);
+    return folded ? out : null;
+  }
+
   function renderCodeBlock(code, info) {
     info = info || '';
     var ranges = '';
@@ -735,14 +782,24 @@
     else if (attrs.props.numbers !== undefined || attrs.props.lineno !== undefined || attrs.props.lines !== undefined) numbers = true;
     else numbers = _codeNumbers === 'off' ? false : _codeNumbers === 'on' ? true : lines.length > 1;
 
-    var rows = lines.map(function (ln, idx) {
-      var no = start + idx;
-      return '<span class="pmd-row' + (hl[no] ? ' pmd-hl' : '') + '" data-ln="' + no + '">' +
-        '<span class="pmd-line">' + (ln || '') + '</span></span>';
-    }).join('');
+    // in-code folding decision
+    var foldable;
+    if (attrs.props['no-foldcode'] !== undefined || attrs.props['fold-code'] === 'false') foldable = false;
+    else if (attrs.props.foldable !== undefined || attrs.props['fold-code'] !== undefined || attrs.props['collapsible-code'] !== undefined) foldable = true;
+    else foldable = _codeFoldable === 'on' ? true : _codeFoldable === 'off' ? false : (lang === 'json');
+
+    var rows = null, codeFold = false;
+    if (foldable && lines.length > 1) {
+      var raw = code.replace(/\r\n?/g, '\n').replace(/\t/g, '    ').split('\n');
+      while (raw.length > lines.length) raw.pop();
+      var indents = raw.map(function (l) { return /^\s*$/.test(l) ? Infinity : l.match(/^ */)[0].length; });
+      rows = foldRows(lines, indents, start, hl);
+      codeFold = rows !== null;
+    }
+    if (rows === null) rows = flatRows(lines, start, hl);
 
     var wrapped = !!(fold || title);
-    var preClass = 'pmd-code' + (numbers ? ' pmd-numbered' : '');
+    var preClass = 'pmd-code' + (numbers ? ' pmd-numbered' : '') + (codeFold ? ' pmd-codefold' : '');
     var langAttr = (lang && !wrapped) ? ' data-lang="' + escapeAttr(lang) + '"' : '';
     var codeClass = lang ? ' class="language-' + escapeAttr(lang) + '"' : '';
     var pre = '<pre class="' + preClass + '"' + langAttr + '><code' + codeClass + '>' + rows + '</code></pre>';
@@ -991,6 +1048,22 @@
     'margin:0 -1.1rem;padding-right:1.1rem;box-shadow:inset 3px 0 var(--pmd-accent)}',
     '.pmd-code.pmd-numbered .pmd-row.pmd-hl{padding-left:3.2em;margin-left:-1.1rem}',
     '.pmd-code.pmd-numbered .pmd-row.pmd-hl:before{opacity:1;left:1.1rem}',
+    // in-code structural folding (nested <details>)
+    '.pmd-codefold details.pmd-fl{display:block}',
+    '.pmd-codefold summary.pmd-row,.pmd-codefold details.pmd-fl{margin:0}',
+    '.pmd-codefold summary.pmd-row{list-style:none}',
+    '.pmd-codefold summary.pmd-row::-webkit-details-marker{display:none}',
+    '.pmd-codefold summary.pmd-row::marker{content:""}',
+    '.pmd-codefold .pmd-row{position:relative;padding-left:1.5em}',
+    '.pmd-codefold .pmd-foldarrow{position:absolute;left:.15em;width:1em;text-align:center;color:var(--pmd-muted);cursor:pointer;user-select:none;-webkit-user-select:none}',
+    'summary.pmd-row{cursor:pointer}',
+    '.pmd-codefold details.pmd-fl>summary.pmd-row>.pmd-foldarrow:before{content:"\\25BE"}',
+    '.pmd-codefold details.pmd-fl:not([open])>summary.pmd-row>.pmd-foldarrow:before{content:"\\25B8"}',
+    '.pmd-codefold details.pmd-fl:not([open])>summary.pmd-row .pmd-line:after{content:" \\2026";color:var(--pmd-muted)}',
+    '.pmd-codefold.pmd-numbered .pmd-row{padding-left:4em}',
+    '.pmd-codefold.pmd-numbered .pmd-row:before{left:0}',
+    '.pmd-codefold.pmd-numbered .pmd-foldarrow{left:2.5em}',
+    '.pmd-codefold .pmd-row.pmd-hl{margin:0}',
     // syntax tokens — light palette (GitHub-ish)
     '.pmd-code .tok-com{color:#6a737d;font-style:italic}.pmd-code .tok-kw{color:#cf222e}',
     '.pmd-code .tok-str{color:#0a3069}.pmd-code .tok-num{color:#0550ae}.pmd-code .tok-fn{color:#8250df}',
@@ -1266,6 +1339,8 @@
 
     var cn = String(options['code-numbers'] != null ? options['code-numbers'] : (meta['code-numbers'] || '')).toLowerCase();
     _codeNumbers = /^(false|off|no)$/.test(cn) ? 'off' : /^(true|on|yes|all)$/.test(cn) ? 'on' : 'auto';
+    var cf = String(options['code-foldable'] != null ? options['code-foldable'] : (meta['code-foldable'] || '')).toLowerCase();
+    _codeFoldable = /^(false|off|no)$/.test(cf) ? 'off' : /^(true|on|yes|all)$/.test(cf) ? 'on' : 'auto';
 
     var css = getCss(themeName, {
       vars: pagePropsToVars(meta, options),

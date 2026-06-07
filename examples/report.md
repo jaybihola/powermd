@@ -123,6 +123,26 @@ console.log(greet("world"));
 Disable numbers per block with `no-numbers`, or globally with
 `code-numbers: false` in the front matter.
 
+Make the whole block collapsible with `fold`:
+
+```js fold title="Collapsed by default"
+const hidden = "click the header to reveal me";
+```
+
+And fold *inside* the code — click the ▾ arrows in the gutter. This is on
+automatically for JSON (add `foldable` to enable it for any language):
+
+```json
+{
+  "name": "powermd",
+  "features": {
+    "highlighting": true,
+    "lineNumbers": true,
+    "folding": ["block", "in-code"]
+  }
+}
+```
+
 ## Bring your own CSS
 
 For full control, drop a `:::css` block anywhere. It is added to the page styles:

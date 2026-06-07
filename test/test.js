@@ -78,6 +78,22 @@ check('collapsible code open', P.render('```js open\nx\n```').indexOf('pmd-code-
 check('css palette present', P.renderDocument('x', {}).indexOf('.pmd-code .tok-kw{color:#cf222e}') !== -1);
 check('dark palette present', P.renderDocument('x', {}).indexOf('[data-theme=dark] .pmd-code .tok-str') !== -1);
 
+// in-code structural folding
+var jsonFold = P.render('```json\n{\n  "a": 1,\n  "b": 2\n}\n```');
+check('json auto-foldable', jsonFold.indexOf('pmd-codefold') !== -1 && jsonFold.indexOf('<details class="pmd-fl" open>') !== -1);
+check('json fold summary is opening line', jsonFold.indexOf('<summary class="pmd-row" data-ln="1">') !== -1);
+check('foldarrow present', jsonFold.indexOf('<span class="pmd-foldarrow"></span>') !== -1);
+var nested = P.render('```json\n{\n  "x": {\n    "y": 1\n  }\n}\n```');
+check('nested json folding', nested.split('<details class="pmd-fl"').length === 3);
+check('non-json not foldable by default', P.render('```js\nfunction f(){\n  return 1\n}\n```').indexOf('pmd-codefold') === -1);
+check('foldable attr enables on any lang', P.render('```js foldable\nfunction f(){\n  return 1\n}\n```').indexOf('pmd-codefold') !== -1);
+check('no-foldcode disables for json', P.render('```json no-foldcode\n{\n  "a": 1\n}\n```').indexOf('pmd-codefold') === -1);
+check('flat json when no nesting', P.render('```json\n{"a":1}\n```').indexOf('pmd-codefold') === -1);
+check('code-foldable off globally', P.renderDocument('---\ncode-foldable: false\n---\n```json\n{\n  "a": 1\n}\n```', {}).indexOf('class="pmd-code pmd-numbered pmd-codefold"') === -1);
+check('code-foldable on globally for js', P.renderDocument('---\ncode-foldable: true\n---\n```js\nif(x){\n  y()\n}\n```', {}).indexOf('pmd-codefold') !== -1);
+// whole-block fold still independent of in-code fold
+check('block fold + json inner fold coexist', (function(){var h=P.render('```json fold\n{\n  "a": 1\n}\n```');return h.indexOf('pmd-code-fold')!==-1 && h.indexOf('pmd-codefold')!==-1;})());
+
 // tables
 var t = P.render('| A | B |\n|:--|--:|\n| 1 | 2 |');
 check('table thead', t.indexOf('<thead>') !== -1);
