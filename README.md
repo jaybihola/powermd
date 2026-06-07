@@ -389,6 +389,18 @@ Build them all with `npm run build:examples` (each is a different theme, with no
 | `release-notes.md` | slate | GitHub-style alerts (incl. collapsible), highlighted **diff** code, task lists |
 | `feature-reference.md` | contrast | **Every feature on one page** — collapsible headings, inline `[toc]`, all callouts, all code features, in-code folding, scoped CSS, images |
 
+## Desktop IDE
+
+There's a companion **Electron IDE** in [`ide/`](ide/) — a clean editor with a
+file explorer, tabs, live preview, a front-matter inspector, ⌘P/⌘K palette, and
+more. It reuses this engine for rendering. Run it with:
+
+```bash
+cd ide && npm install && npm start
+```
+
+See [`ide/README.md`](ide/README.md) for details.
+
 ## How it's built
 
 - `src/powermd.js` — the whole engine: Markdown parser, themes, and document builder, in one isomorphic file.

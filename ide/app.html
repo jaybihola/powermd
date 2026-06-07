@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>powermd ide</title>
+<script src="../src/powermd.js"></script>
+<link rel="stylesheet" href="app.css"/>
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <div class="brand"><span class="logo">⚡</span> powermd <span class="dim">ide</span></div>
+    <div class="crumb" id="crumb"></div>
+    <div class="actions">
+      <div class="seg" id="viewmodes">
+        <button data-mode="editor" title="Editor only">✎</button>
+        <button data-mode="split" class="active" title="Split view">▰▰</button>
+        <button data-mode="preview" title="Preview only">▢</button>
+      </div>
+      <label class="field">Theme
+        <select id="theme"></select>
+      </label>
+      <button id="inspBtn" class="btn" title="Edit front matter">⚙ Front matter</button>
+      <label class="check"><input type="checkbox" id="autosave" checked/> Auto-save</label>
+      <button id="save" class="btn primary" title="Save (⌘/Ctrl+S)">Save</button>
+    </div>
+  </header>
+
+  <div class="body">
+    <aside class="sidebar" id="sidebar">
+      <div class="side-head">
+        <span>Explorer</span>
+        <span class="side-actions">
+          <button id="newfile" title="New file">＋</button>
+          <button id="refresh" title="Refresh">⟳</button>
+        </span>
+      </div>
+      <div class="tree" id="tree"></div>
+      <div class="side-root" id="sideRoot"></div>
+    </aside>
+
+    <div class="divider vert" data-div="sidebar"></div>
+
+    <main class="panes" id="panes" data-mode="split">
+      <section class="pane editor-pane">
+        <div class="tabbar" id="tabbar"></div>
+        <div class="editor-wrap" id="editorWrap">
+          <div class="gutter" id="gutter"><div class="gutter-inner" id="gutterInner"></div></div>
+          <div class="curline" id="curline"></div>
+          <textarea id="src" spellcheck="false" wrap="off" placeholder="Select a file from the Explorer (or ⌘P), or press ＋ to create one."></textarea>
+        </div>
+      </section>
+      <div class="divider vert" data-div="editor"></div>
+      <section class="pane preview-pane">
+        <iframe id="preview" title="preview"></iframe>
+        <div class="empty" id="empty">
+          <div class="empty-art">⚡</div>
+          <h2>powermd ide</h2>
+          <p>Open a Markdown file to start editing.<br/>Live preview appears here.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- front-matter inspector drawer -->
+  <aside class="inspector" id="inspector">
+    <div class="insp-head"><span>Front matter</span><button id="inspClose" title="Close">×</button></div>
+    <div class="insp-body" id="inspBody"></div>
+  </aside>
+
+  <!-- command palette / fuzzy file finder -->
+  <div class="overlay" id="overlay">
+    <div class="palette">
+      <input id="palInput" type="text" autocomplete="off" spellcheck="false" placeholder="Type a command…"/>
+      <ul class="pal-list" id="palList"></ul>
+    </div>
+  </div>
+
+  <!-- right-click context menu -->
+  <div class="ctxmenu" id="ctxmenu"></div>
+
+  <footer class="statusbar">
+    <span id="status" class="status"></span>
+    <span class="spacer"></span>
+    <span id="counts" class="counts"></span>
+  </footer>
+
+</div>
+<script src="app.js"></script>
+</body>
+</html>

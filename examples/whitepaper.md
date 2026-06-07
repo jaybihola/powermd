@@ -3,7 +3,7 @@ title: Edge Caching at Scale
 subtitle: A practical whitepaper on cutting tail latency
 author: Platform Engineering
 date: 2026-06-07
-theme: paper
+theme: slate
 accent: "#a8632b"
 toc: top
 sticky-header: true
@@ -14,6 +14,7 @@ heading-font: Georgia, "Times New Roman", serif
 heading-scale: 1.1
 line-height: 1.75
 align: justify
+playful: true
 ---
 
 ## Abstract
