@@ -142,8 +142,9 @@ select { background: var(--bg); border: 1px solid var(--border-strong); border-r
   --ed-pt: 14px; --ed-line: 23px; --ed-fs: 13.5px; --ed-gut: 46px; --ed-pr: 20px; }
 .gutter-bg { position: absolute; left: 0; top: 0; bottom: 0; width: var(--ed-gut);
   background: var(--bg-soft); border-right: 1px solid var(--border); z-index: 1; }
-.highlight { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none;
-  margin: 0; padding: var(--ed-pt) 0; color: var(--fg); font: var(--ed-fs)/var(--ed-line) var(--mono); tab-size: 2; }
+.highlight { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
+.hl-inner { margin: 0; padding: var(--ed-pt) 0; color: var(--fg); font: var(--ed-fs)/var(--ed-line) var(--mono);
+  tab-size: 2; will-change: transform; }
 .erow { position: relative; min-height: var(--ed-line); padding: 0 var(--ed-pr) 0 calc(var(--ed-gut) + 8px);
   white-space: pre; }
 .editor-wrap.wrap .erow { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
