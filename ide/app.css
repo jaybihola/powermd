@@ -93,7 +93,13 @@ select { background: var(--bg); border: 1px solid var(--border-strong); border-r
 .row:hover { background: var(--bg-soft); }
 .row.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 .row .ico { flex: none; width: 16px; text-align: center; opacity: .8; font-size: 12px; }
-.row .label { overflow: hidden; text-overflow: ellipsis; }
+.row .label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.root-row { font-weight: 600; }
+.rowx { flex: none; border: 0; background: transparent; color: var(--muted); cursor: pointer;
+  width: 18px; height: 18px; border-radius: 5px; line-height: 1; font-size: 14px; opacity: 0; }
+.root-row:hover .rowx { opacity: 1; }
+.rowx:hover { background: var(--border-strong); color: var(--fg); }
+.tree-hint { color: var(--muted); font-size: 12px; padding: 2px 10px 6px; font-style: italic; }
 .row.dirty .label::after { content: "•"; color: var(--accent); margin-left: 5px; }
 .children { margin-left: 12px; border-left: 1px solid var(--border); padding-left: 4px; }
 .collapsed > .children { display: none; }
@@ -106,6 +112,10 @@ select { background: var(--bg); border: 1px solid var(--border-strong); border-r
 .pane { flex: 1; min-width: 0; height: 100%; overflow: hidden; position: relative; }
 .panes[data-mode="editor"] .preview-pane, .panes[data-mode="editor"] .divider[data-div="editor"] { display: none; }
 .panes[data-mode="preview"] .editor-pane, .panes[data-mode="preview"] .divider[data-div="editor"] { display: none; }
+/* in single-pane modes the visible pane fills, overriding any inline flex left
+   over from dragging the splitter */
+.panes[data-mode="editor"] .editor-pane { flex: 1 1 auto !important; }
+.panes[data-mode="preview"] .preview-pane { flex: 1 1 auto !important; }
 
 .editor-pane { display: flex; flex-direction: column; }
 
@@ -190,6 +200,11 @@ select { background: var(--bg); border: 1px solid var(--border-strong); border-r
 .divider.vert { width: 6px; flex: none; cursor: col-resize; background: transparent; position: relative; }
 .divider.vert::after { content: ""; position: absolute; inset: 0 2px; background: var(--border); transition: background .12s; }
 .divider.vert:hover::after { background: var(--accent); }
+/* while dragging a splitter: keep the resize cursor everywhere and stop the
+   preview iframe / panes from swallowing the mouse events */
+body.dragging { cursor: col-resize !important; user-select: none; }
+body.dragging iframe, body.dragging #src, body.dragging .pane { pointer-events: none !important; }
+body.dragging .divider.vert::after { background: var(--accent); }
 
 /* ---- status bar ---- */
 .statusbar { height: var(--status-h); flex: none; display: flex; align-items: center;
