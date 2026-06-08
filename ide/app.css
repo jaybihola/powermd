@@ -134,25 +134,31 @@ select { background: var(--bg); border: 1px solid var(--border-strong); border-r
   height: 18px; border-radius: 5px; line-height: 1; font-size: 14px; }
 .tab .x:hover { background: var(--border-strong); color: var(--fg); }
 
-/* editor with gutter + current-line highlight */
+/* editor: a transparent textarea over a per-line highlight overlay.
+   Each overlay row carries its own line number (pinned top-left) so numbers
+   stay aligned even with soft wrap. The textarea and overlay share identical
+   font/metrics/padding so caret and text line up exactly. */
 .editor-wrap { position: relative; flex: 1; overflow: hidden; background: var(--bg);
-  --ed-pt: 14px; --ed-line: 23px; --ed-fs: 13.5px; --ed-pl: 54px; }
-.gutter { position: absolute; left: 0; top: 0; bottom: 0; width: 44px; overflow: hidden;
-  background: var(--bg-soft); border-right: 1px solid var(--border); z-index: 2; }
-.gutter-inner { padding: var(--ed-pt) 8px 0 0; font: var(--ed-fs)/var(--ed-line) var(--mono);
-  color: var(--muted); text-align: right; will-change: transform; }
-.gutter-inner span { display: block; opacity: .55; }
-.gutter-inner span.cur { opacity: 1; color: var(--fg); }
-.curline { position: absolute; left: 44px; right: 0; height: var(--ed-line); z-index: 1;
-  background: color-mix(in srgb, var(--accent) 9%, transparent); pointer-events: none; will-change: transform; }
-/* syntax-highlight overlay behind a transparent textarea */
+  --ed-pt: 14px; --ed-line: 23px; --ed-fs: 13.5px; --ed-gut: 46px; --ed-pr: 20px; }
+.gutter-bg { position: absolute; left: 0; top: 0; bottom: 0; width: var(--ed-gut);
+  background: var(--bg-soft); border-right: 1px solid var(--border); z-index: 1; }
 .highlight { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none;
-  padding: var(--ed-pt) 20px var(--ed-pt) var(--ed-pl); margin: 0; color: var(--fg);
-  font: var(--ed-fs)/var(--ed-line) var(--mono); tab-size: 2; white-space: pre; word-wrap: normal; }
+  margin: 0; padding: var(--ed-pt) 0; color: var(--fg); font: var(--ed-fs)/var(--ed-line) var(--mono); tab-size: 2; }
+.erow { position: relative; min-height: var(--ed-line); padding: 0 var(--ed-pr) 0 calc(var(--ed-gut) + 8px);
+  white-space: pre; }
+.editor-wrap.wrap .erow { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+.erow.cur { background: color-mix(in srgb, var(--accent) 9%, transparent); }
+.eno { position: absolute; left: 0; top: 0; width: var(--ed-gut); height: var(--ed-line); padding-right: 8px;
+  text-align: right; color: var(--muted); opacity: .55; user-select: none; -webkit-user-select: none;
+  background: var(--bg-soft); border-right: 1px solid var(--border); box-sizing: border-box;
+  transform: translateX(var(--sx, 0px)); }
+.erow.cur .eno { opacity: 1; color: var(--fg); }
+.etext { display: inline; }
 #src { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; resize: none; outline: none;
-  padding: var(--ed-pt) 20px var(--ed-pt) var(--ed-pl); background: transparent;
+  padding: var(--ed-pt) var(--ed-pr) var(--ed-pt) calc(var(--ed-gut) + 8px); background: transparent;
   color: transparent; caret-color: var(--accent); -webkit-text-fill-color: transparent;
   font: var(--ed-fs)/var(--ed-line) var(--mono); tab-size: 2; white-space: pre; overflow: auto; z-index: 3; }
+.editor-wrap.wrap #src { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; overflow-x: hidden; }
 #src::selection { background: color-mix(in srgb, var(--accent) 26%, transparent); -webkit-text-fill-color: transparent; }
 
 /* markdown editor tokens (monospace keeps bold/italic the same width) */
@@ -187,12 +193,6 @@ select { background: var(--bg); border: 1px solid var(--border-strong); border-r
   font-size: 12px; padding: 5px 12px; cursor: pointer; font-family: var(--mono); }
 .fmbar button:hover { color: var(--fg); }
 
-/* soft wrap: textarea + overlay wrap together; gutter/current-line hidden
-   (a wrapped logical line spans multiple visual rows, so numbers can't align) */
-.editor-wrap.wrap #src, .editor-wrap.wrap .highlight {
-  white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; padding-left: 20px; }
-.editor-wrap.wrap #src { overflow-x: hidden; }
-.editor-wrap.wrap .gutter, .editor-wrap.wrap .curline { display: none; }
 .btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 
 .preview-pane { background: #fff; }
@@ -262,6 +262,7 @@ body.dragging .divider.vert::after { background: var(--accent); }
 .ctxmenu { position: fixed; z-index: 70; min-width: 160px; background: var(--bg-elev);
   border: 1px solid var(--border-strong); border-radius: 9px; box-shadow: var(--shadow); padding: 5px; display: none; }
 .ctxmenu.open { display: block; }
+.ctxmenu button .arr { float: right; margin-left: 1.5em; opacity: .55; }
 .ctxmenu button { display: block; width: 100%; text-align: left; border: 0; background: transparent;
   padding: 7px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--fg); }
 .ctxmenu button:hover { background: var(--accent-soft); color: var(--accent); }

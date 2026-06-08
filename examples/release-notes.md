@@ -31,7 +31,7 @@ acme doctor
 > Run `acme plugin scaffold my-plugin` to generate a working starter.
 
 ## Breaking changes
-
+P
 > [!WARNING] Plugin API
 > `registerCommand()` now takes an options object instead of positional args.
 

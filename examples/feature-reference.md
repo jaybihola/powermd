@@ -170,6 +170,7 @@ More languages: `css`, `html`, `sql`, `go`, `rust`, `yaml` are all highlighted.
 SELECT name, count(*) FROM users WHERE active = 1 GROUP BY name;
 ```
 
+
 ## Images
 
 ![Inline SVG image](data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='640'%20height='150'%3E%3Crect%20width='640'%20height='150'%20rx='12'%20fill='%230033cc'/%3E%3Ctext%20x='28'%20y='88'%20fill='white'%20font-size='32'%20font-family='sans-serif'%3EImages%20render%20inline%3C/text%3E%3C/svg%3E)
