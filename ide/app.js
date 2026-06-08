@@ -205,8 +205,18 @@
     if (state.active < 0) return;
     var doc = preview.contentDocument || preview.contentWindow.document;
     var y = doc && doc.documentElement ? (doc.scrollingElement || doc.documentElement).scrollTop : 0;
-    preview.srcdoc = PowerMD.renderDocument(src.value, {}); // theme comes from the doc's front matter
-    preview.onload = function () { try { var d = preview.contentDocument; (d.scrollingElement || d.documentElement).scrollTop = y; } catch (e) {} };
+    var html = PowerMD.renderDocument(src.value, {}); // theme comes from the doc's front matter
+    // Write into the iframe directly (NOT srcdoc): srcdoc resolves "#id" links
+    // against the parent page, which would load the whole app inside the preview.
+    // document.write gives the frame an about:blank base, so anchors stay local.
+    try {
+      doc.open(); doc.write(html); doc.close();
+      requestAnimationFrame(function () {
+        try { var de = doc.scrollingElement || doc.documentElement; de.scrollTop = y; } catch (e) {}
+      });
+    } catch (e) {
+      preview.srcdoc = html; // fallback
+    }
   }
 
   /* ===================== editor: gutter, current line, scroll sync ===================== */
