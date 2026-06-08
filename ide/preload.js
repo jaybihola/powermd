@@ -2,7 +2,7 @@
 
 // Secure bridge between the renderer and the main process. The renderer never
 // touches Node/fs directly — it calls window.pmd.* which forwards over IPC.
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, clipboard } = require('electron');
 
 const MENU_CHANNELS = ['menu:open', 'menu:new', 'menu:save', 'menu:view'];
 
@@ -18,6 +18,8 @@ contextBridge.exposeInMainWorld('pmd', {
   rename: (from, to) => ipcRenderer.invoke('fs:rename', { from, to }),
   del: (p) => ipcRenderer.invoke('fs:delete', p),
   reveal: (p) => ipcRenderer.invoke('shell:reveal', p),
+  clipRead: () => clipboard.readText(),
+  clipWrite: (t) => clipboard.writeText(t),
   on: (channel, cb) => {
     if (MENU_CHANNELS.indexOf(channel) === -1) return;
     ipcRenderer.on(channel, (e, ...args) => cb(...args));

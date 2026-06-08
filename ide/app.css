@@ -187,6 +187,14 @@ select { background: var(--bg); border: 1px solid var(--border-strong); border-r
   font-size: 12px; padding: 5px 12px; cursor: pointer; font-family: var(--mono); }
 .fmbar button:hover { color: var(--fg); }
 
+/* soft wrap: textarea + overlay wrap together; gutter/current-line hidden
+   (a wrapped logical line spans multiple visual rows, so numbers can't align) */
+.editor-wrap.wrap #src, .editor-wrap.wrap .highlight {
+  white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; padding-left: 20px; }
+.editor-wrap.wrap #src { overflow-x: hidden; }
+.editor-wrap.wrap .gutter, .editor-wrap.wrap .curline { display: none; }
+.btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
 .preview-pane { background: #fff; }
 #preview { width: 100%; height: 100%; border: 0; background: #fff; }
 
