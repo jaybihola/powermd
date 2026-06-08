@@ -7,7 +7,6 @@ theme: slate
 accent: "#a8632b"
 toc: top
 sticky-header: true
-hero: false
 back-to-top: true
 width: 760
 heading-font: Georgia, "Times New Roman", serif
@@ -15,6 +14,7 @@ heading-scale: 1.1
 line-height: 1.75
 align: justify
 playful: true
+hero: false
 ---
 
 ## Abstract
