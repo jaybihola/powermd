@@ -11,25 +11,32 @@
 <div id="app">
 
   <header class="topbar">
-    <div class="brand"><span class="logo">⚡</span> powermd <span class="dim">ide</span></div>
+    <button class="iconbtn on" id="sideToggle" title="Toggle sidebar (⌘B)" aria-label="Toggle sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+    </button>
     <div class="crumb" id="crumb"></div>
     <div class="actions">
       <div class="seg" id="viewmodes">
-        <button data-mode="editor" title="Editor only">✎</button>
-        <button data-mode="split" class="active" title="Split view">▰▰</button>
-        <button data-mode="preview" title="Preview only">▢</button>
+        <button data-mode="editor" title="Editor (⌘1)" aria-label="Editor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M4 12h16M4 18h7"/></svg>
+        </button>
+        <button data-mode="split" class="active" title="Split (⌘2)" aria-label="Split">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16"/></svg>
+        </button>
+        <button data-mode="preview" title="Preview (⌘3)" aria-label="Preview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="2.5"/></svg>
+        </button>
       </div>
-      <button id="wrapBtn" class="btn" title="Toggle soft wrap (Alt+Z)">Wrap</button>
-      <label class="field">Theme
-        <select id="theme"></select>
-      </label>
-      <button id="inspBtn" class="btn" title="Edit front matter">⚙ Front matter</button>
-      <label class="check"><input type="checkbox" id="autosave" checked/> Auto-save</label>
-      <button id="save" class="btn primary" title="Save (⌘/Ctrl+S)">Save</button>
+      <button class="iconbtn" id="wrapBtn" title="Soft wrap (⌥Z)" aria-label="Soft wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h13a3 3 0 1 1 0 6h-3"/><path d="m16 15-2 3 2 3" transform="translate(0 -3)"/></svg>
+      </button>
+      <button class="iconbtn" id="inspBtn" title="Front matter" aria-label="Front matter">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="16" x2="20" y2="16"/><circle cx="9" cy="8" r="2.3" fill="var(--bg-elev)"/><circle cx="15" cy="16" r="2.3" fill="var(--bg-elev)"/></svg>
+      </button>
     </div>
   </header>
 
-  <div class="body">
+  <div class="body" id="body">
     <aside class="sidebar" id="sidebar">
       <div class="side-head">
         <span>Explorer</span>
@@ -67,11 +74,13 @@
     </main>
   </div>
 
-  <!-- front-matter inspector drawer -->
-  <aside class="inspector" id="inspector">
-    <div class="insp-head"><span>Front matter</span><button id="inspClose" title="Close">×</button></div>
-    <div class="insp-body" id="inspBody"></div>
-  </aside>
+  <!-- document settings sheet -->
+  <div class="fm-overlay" id="inspector">
+    <div class="fm-sheet">
+      <div class="insp-head"><span>Document settings</span><button id="inspClose" class="btn primary">Done</button></div>
+      <div class="insp-body" id="inspBody"></div>
+    </div>
+  </div>
 
   <!-- command palette / fuzzy file finder -->
   <div class="overlay" id="overlay">
@@ -88,6 +97,7 @@
     <span id="status" class="status"></span>
     <span class="spacer"></span>
     <span id="counts" class="counts"></span>
+    <label class="check"><input type="checkbox" id="autosave" checked/> Autosave</label>
   </footer>
 
 </div>

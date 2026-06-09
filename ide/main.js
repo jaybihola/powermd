@@ -129,13 +129,16 @@ function buildMenu() {
 
 /* ---- window ---- */
 function createWindow() {
+  const mac = process.platform === 'darwin';
   win = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    minWidth: 720,
-    minHeight: 480,
-    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
-    backgroundColor: '#0d1117',
+    width: 1240,
+    height: 820,
+    minWidth: 760,
+    minHeight: 500,
+    titleBarStyle: mac ? 'hiddenInset' : 'default',
+    vibrancy: mac ? 'under-window' : undefined,   // native translucent material
+    visualEffectState: 'active',
+    backgroundColor: mac ? '#00000000' : '#14151d',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
